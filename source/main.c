@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void getHttp(char* url);
+void startAO(char* url);
 	
 //---------------------------------------------------------------------------------
 int main(void) {
@@ -95,10 +95,10 @@ void startAO(char* url) {
                 // M
                 case 77: switch(incoming_buffer[1]){
                             // S
-                            case 83:
+                            case 83: iprintf("Message: %s\n",incoming_buffer);
                                     break;
                             // C
-                            case 67:
+                            case 67: iprintf("Music: %s\n",incoming_buffer);
                                     break;
                         }
                         break;
