@@ -20,7 +20,7 @@ BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data  
 INCLUDES	:=	include
-
+GAME_ICON   :=  $(CURDIR)/../icon.bmp
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------

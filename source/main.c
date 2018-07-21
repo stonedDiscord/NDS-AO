@@ -25,7 +25,7 @@ int main(void) {
 		iprintf("Failed to connect!");
 	} else {
 
-		iprintf("Connected\n\n");
+		iprintf("\x1b[32mConnected to WiFi\x1b[39m\n\n");
 
 		startAO("104.131.93.82:27017");	
         
@@ -64,7 +64,7 @@ void startAO(char* url) {
     // Create a TCP socket
     int my_socket;
     my_socket = socket( AF_INET, SOCK_STREAM, 0 );
-    iprintf("Created Socket!\n");
+    iprintf("Connecting...\n");
 
     // Tell the socket to connect to the IP address we found, on port 80 (HTTP)
     struct sockaddr_in sain;
@@ -72,18 +72,15 @@ void startAO(char* url) {
     sain.sin_port = htons(port);
     sain.sin_addr.s_addr= *( (unsigned long *)(myhost->h_addr_list[0]) );
     connect( my_socket,(struct sockaddr *)&sain, sizeof(sain) );
-    iprintf("Connected to server! %s on port %d\n",ipv4,port);
+    iprintf("Connected to server %s on port %d\n",ipv4,port);
 
     // send our request
     send( my_socket, request_text, strlen(request_text), 0 );
-    iprintf("Sent our request!\n");
-
-    // Print incoming data
-    iprintf("Printing incoming data:\n");
+    iprintf("Sent HI!\n");
 
     int recvd_len;
     char incoming_buffer[256];
-
+    char *message_color = "\x1b[39m";
     char *message_character;
     char *message_text;
     char *music_track;
@@ -91,15 +88,52 @@ void startAO(char* url) {
     while( ( recvd_len = recv( my_socket, incoming_buffer, 255, 0 ) ) != 0 ) { // if recv returns 0, the socket has been closed.
         if(recvd_len>0) { // data was received!
             incoming_buffer[recvd_len] = 0; // null-terminate
-            switch(incoming_buffer[0]){
+
+            int i = 0;
+            char *p = strtok (incoming_buffer, "#");
+            char *parameter_array[20];
+
+            while (p != NULL)
+            {
+                parameter_array[i++] = p;
+                p = strtok (NULL, "#");
+            }
+
+            switch(parameter_array[0][0]){
                 // M
-                case 77: switch(incoming_buffer[1]){
+                case 77: switch(parameter_array[0][1]){
                             // S
-                            case 83: iprintf("Message: %s\n",incoming_buffer);
-                                    break;
+                            case 83:
+                                message_character = parameter_array[3];
+                                message_text = parameter_array[5];
+                                switch(strtol(parameter_array[15][0],&end,10)){
+                                    case 1:
+                                        message_color = "\x1b[32m";
+                                        break;
+                                    case 2:
+                                        message_color = "\x1b[31m";
+                                        break;
+                                    case 3:
+                                        message_color = "\x1b[33m";
+                                        break;
+                                    case 4:
+                                        message_color = "\x1b[34m";
+                                        break;
+                                    case 5:
+                                        message_color = "\x1b[33m";
+                                        break;
+                                    case 0:
+                                    default:
+                                        message_color = "\x1b[39m";
+                                        break;
+                                }
+                                iprintf("\x1b[39m<%s> %s%s\n",message_character,message_color,message_text);
+                                break;
                             // C
-                            case 67: iprintf("Music: %s\n",incoming_buffer);
-                                    break;
+                            case 67:
+                            music_track = parameter_array[1];
+                                iprintf("Played a track: %s\n",music_track);
+                                break;
                         }
                         break;
 
