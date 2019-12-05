@@ -55,7 +55,8 @@ void startAO(char* url) {
 
     // the request for later
     const char * request_text = 
-        "HI#NDSserial#%ID#NDS-AO#0.0.1#%";
+        "HI#NDSserial#%" \
+        "ID#NDS-AO#0.0.1#%";
 
     // Find the IP address of the server, with gethostbyname
     struct hostent * myhost = gethostbyname( ipv4 );
@@ -66,7 +67,7 @@ void startAO(char* url) {
     my_socket = socket( AF_INET, SOCK_STREAM, 0 );
     iprintf("Connecting...\n");
 
-    // Tell the socket to connect to the IP address we found, on port 80 (HTTP)
+    // Tell the socket to connect to the IP address we found
     struct sockaddr_in sain;
     sain.sin_family = AF_INET;
     sain.sin_port = htons(port);
